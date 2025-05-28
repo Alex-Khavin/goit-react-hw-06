@@ -4,6 +4,8 @@ import * as Yup from "yup";
 import "yup-phone-lite";
 import { nanoid } from 'nanoid';
 import css from "./ContactForm.module.css" 
+import { useSelector, useDispatch } from 'react-redux'
+import { addContact } from '/src/redux/contactsSlice.js'
 
 const FeedbackSchema = Yup.object().shape({
     name: Yup.string().min(3, "Too Short!").max(50, "Too Long!").required("Required"),
@@ -12,18 +14,20 @@ const FeedbackSchema = Yup.object().shape({
 
 //.phone('UA', 'Invalid Ukrainian phone number') Для валідації номера телефона у форматі UA!
 
-export default function ContactForm({onContact}) {
-    const nameFieldId = useId();
+export default function ContactForm() {
+  const nameFieldId = useId();
+  const dispath = useDispatch();
+  const newContact = useSelector((state) => state.contacts.items);
 
     const handleSubmit = (values, actions) => {
         const contactId = {
         id: nanoid(),
         ...values
     };
-        onContact(contactId)
+        dispath(addContact(contactId))
         actions.resetForm();
-         console.log(contactId);
-	};
+    };
+  
   return (
     <Formik
       initialValues={{
